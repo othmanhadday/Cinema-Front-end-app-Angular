@@ -1,0 +1,96 @@
+<div class="container-fluid" style="width: 80%!important;">
+  <div class="row">
+    <div class="col-md-2">
+      <ul class="list-group" *ngIf="villes">
+        <li class="list-group-item list-group-item-success">Liste de Villes</li>
+        <li [ngClass]="ville==currentVille?'active':''" class="list-group-item pointer" *ngFor="let ville of villes"
+            (click)="onGetCinema(ville)">
+          {{ville.name}}
+        </li>
+      </ul>
+    </div>
+    <div class="col-md-10">
+      <div class="panel panel-default">
+        <div class="panel-heading" (click)="goMap()">Liste des Cinemas</div>
+        <div class="panel-body">
+          <div class="row">
+            <ul class="nav nav-pills" *ngIf="cinemas">
+              <li [ngClass]="cinema==currentCinema?'active':''" *ngFor="let cinema of cinemas" class="pointer">
+                <a (click)="onGetSalles(cinema)">{{cinema.name}}</a>
+              </li>
+            </ul>
+          </div>
+          <p></p>
+          <div class="row" *ngIf="salles">
+            <div *ngFor="let salle of salles">
+              <div class="col-md-6">
+                <div class="panel panel-default">
+                  <div class="panel-heading">{{salle.name}}</div>
+                  <div class="panel-body" *ngIf="salle.projections">
+                    <div class="row">
+                      <div class="col-md-5">
+                        <img class="imgSize"
+                             src="{{cinemaService.host+'/imageFilm/'+salle.projections._embedded.projectionFilms[0].film.id}}"/>
+                      </div>
+                      <div class="col-md-6">
+                        <ul class="list-group">
+                          <li class="list-group-item" (click)="showSeances(salle.name)">
+                            Seances <span class="pull-right">
+                            <i *ngIf="d!=salle.name" class="glyphicon glyphicon-chevron-down"></i>
+                            <i *ngIf="d==salle.name" class="glyphicon glyphicon-chevron-up"></i>
+                          </span>
+                          </li>
+                          <div *ngIf="d==salle.name">
+                            <li (click)="onGetTicketsPlaces(projection)"
+                                [ngClass]="projection==currentProjection?'active':''" class="list-group-item pointer"
+                                *ngFor="let projection of salle.projections._embedded.projectionFilms">
+                              {{projection.seance.heureDebut}} => Prix : {{projection.prix|number:'0.00'}}Dh
+                            </li>
+                          </div>
+                        </ul>
+                      </div>
+                    </div>
+                    <div *ngIf="currentProjection">
+                      <div *ngIf="currentProjection.salle.name==salle.name">
+                        <div class="row" *ngIf="currentProjection.tickets">
+                          <button (click)="onSelectedTicket(ticket)" class="{{styleTicketSelection(ticket)}}" [disabled]="ticket.reservee==true" *ngFor="let ticket of currentProjection.tickets._embedded.tickets">
+                            {{ticket.place.numero}}
+                          </button>
+                        </div>
+                      </div>
+                      <div *ngIf="listTicket && listTicket.length>0">
+                        <form #f="ngForm" (ngSubmit)="onSubmitPayment(f.value)">
+                          <div class="form-group">
+                            <label class="control-label">Nom Client : </label>
+                            <input class="form-control" type="text" name="nomClient" ngModel/>
+                          </div>
+                          <div class="form-group">
+                            <label class="control-label">Code Payment : </label>
+                            <input class="form-control" type="text" name="codePayment" ngModel/>
+                          </div>
+                          <button type="submit" class="btn btn-primary">Payer</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<agm-map
+  [latitude]="lat"
+  [longitude]="lng"
+  [zoom]="zoom"
+  style="height: 500px;transition-delay: 1s"
+  (mapClick)="map($event)">
+    <agm-marker [latitude]="lat" [longitude]="lng"></agm-marker>
+</agm-map>
+

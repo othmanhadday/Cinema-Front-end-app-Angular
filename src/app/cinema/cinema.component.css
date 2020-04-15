@@ -1,0 +1,21 @@
+.pointer{
+  cursor: pointer;
+}
+
+.ticket{
+  margin: 2px;
+  width: 40px;
+}
+
+@media only screen and (min-width: 900px) {
+  .imgSize{
+    width: 200px;
+    height: 250px;
+  }
+}
+@media only screen and (max-width: 600px) {
+  .imgSize{
+    width: 70px;
+    height: 170px;
+  }
+}
